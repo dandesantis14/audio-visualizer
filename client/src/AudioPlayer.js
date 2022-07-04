@@ -1,8 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { AudioService } from './AudioService';
 import Controls from './Controls';
+import Visualizer from './Visualizer';
 
+const audioService = new AudioService();
 
 const AudioPlayer = ({tracks}) => {
+
     //STATES TO MANAGE PLAYMENT
     //Tracks which song in collection
     const [trackIndex, setTrackIndex] = useState(0);
@@ -47,11 +51,13 @@ const AudioPlayer = ({tracks}) => {
             audioRef.current.pause()
         }
     },[isPlaying])
-    //Tracks song index
+    //Tracks song index changing
     useEffect(()=>{
         audioRef.current.pause()
         
         audioRef.current = new Audio(audioSource)
+        audioService.createSource(audioRef.current)
+
         setTrackProgress(audioRef.current.currentTime)
         
         if (isReady.current){
@@ -89,7 +95,7 @@ const AudioPlayer = ({tracks}) => {
         audioRef.current.currentTime = timestamp;
         setTrackProgress(audioRef.current.currentTime)
     }
-    const  onScrubEnd = () => {
+    const onScrubEnd = () => {
         startTimer();
     }
     
@@ -116,6 +122,7 @@ const AudioPlayer = ({tracks}) => {
                 onMouseUp = {onScrubEnd}
                 onKeyUp = {onScrubEnd}
             />
+            <Visualizer />
         </div>
     );
 }
